@@ -13,7 +13,7 @@ const stdrouter = require('./Routes/stdrouter');
 app.set("view engine", "ejs");
 app.set("views", "Views");
 
-const MongoStore = require('connect-mongo')(session);
+const MongoStore = require('connect-mongo');  // Fix here
 const mongoose = require('mongoose');
 app.locals.cache = false;
 
@@ -22,7 +22,9 @@ app.use(session({
   secret: '123456789',
   resave: false,
   saveUninitialized: true,
-  store: new MongoStore({ mongooseConnection: mongoose.connection }),
+  store: new MongoStore({
+    mongooseConnection: mongoose.connection
+  }),
   cookie: { secure: false } // set to true if using https
 }));
 
