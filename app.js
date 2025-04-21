@@ -13,9 +13,17 @@ const stdrouter = require('./Routes/stdrouter');
 app.set("view engine", "ejs");
 app.set("views", "Views");
 
-const MongoStore = require('connect-mongo');  // Fix here
+const MongoStore = require('connect-mongo');
 const mongoose = require('mongoose');
 app.locals.cache = false;
+
+// MongoDB URI from environment variables
+const mongoURI = process.env.MONGODB_URI || 'your-mongodb-connection-string';
+
+// Connect to MongoDB
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.log("MongoDB connection error:", err));
 
 // Use MongoDB store for sessions
 app.use(session({
@@ -23,7 +31,8 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
   store: new MongoStore({
-    mongooseConnection: mongoose.connection
+    mongoUrl: mongoURI, // Provide mongoUrl here
+    ttl: 14 * 24 * 60 * 60 // optional: session expiry time (in seconds)
   }),
   cookie: { secure: false } // set to true if using https
 }));
