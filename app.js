@@ -1,7 +1,7 @@
 const express =require("express");
 const app= express();
 require("dotenv").config();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 10000 ;
 const bodyParser = require("body-parser");
 const cookieparser = require("cookie-parser");
 const session= require('express-session');
@@ -12,7 +12,17 @@ const stdrouter = require('./Routes/stdrouter')
 
 app.set("view engine","ejs");
 app.set("views","Views");
+
+const MongoStore = require('connect-mongo')(session);
+const mongoose = require('mongoose');
 app.locals.cache = false;
+app.use(session({
+  secret: '123456789',
+  resave: false,
+  saveUninitialized: true,
+  store: new MongoStore({ mongooseConnection: mongoose.connection }),
+  cookie: { secure: false } // set true if using https
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 
